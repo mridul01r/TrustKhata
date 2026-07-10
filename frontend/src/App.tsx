@@ -1,9 +1,12 @@
+import { Button } from "@/components/ui/button"
+
 function App() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-900">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-900">
       <h1 className="text-4xl font-bold text-white">
-        Retail ERP — Tailwind is working 🎉
+        Retail ERP — ShadCN is working 🎉
       </h1>
+      <Button>Click me</Button>
     </div>
   )
 }
