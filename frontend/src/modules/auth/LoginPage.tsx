@@ -43,7 +43,7 @@ export default function LoginPage() {
       localStorage.setItem("auth_token", data.token)
       localStorage.setItem("username", data.username)
       localStorage.setItem("role", data.role)
-      navigate("/dashboard")
+      navigate(data.role === "CASHIER" ? "/pos" : "/dashboard")
     },
   })
 

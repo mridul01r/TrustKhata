@@ -1,31 +1,37 @@
-# --- Java / Gradle (backend) ---
-backend/build/
-backend/.gradle/
-backend/out/
-*.class
-*.jar
-!gradle/wrapper/gradle-wrapper.jar
-
-# --- Node / Vite (frontend) ---
-frontend/node_modules/
-frontend/dist/
-frontend/.vite/
-
-# --- IDE ---
-.idea/
-.vscode/
-*.iml
-
-# --- OS ---
-Thumbs.db
-.DS_Store
-
-# --- Env / secrets ---
+# === SECRETS - never commit these ===
 .env
-.env.local
-*.local.yml
-application-local.yml
+.env.*
+!.env.example
+license-tool/license-private-key.txt
+license-tool/license-public-key.txt
 
-# --- Logs ---
+# === Node / frontend / license-server / next-app ===
+node_modules/
+dist/
+build/
+.vite/
 *.log
-logs/
+npm-debug.log*
+
+# === Java / Spring Boot backend ===
+backend/build/
+backend/bin/
+backend/.gradle/
+backend/custom-jre/
+*.jar
+!gradle-wrapper.jar
+
+# === Rust / Tauri desktop-shell ===
+desktop-shell/src-tauri/target/
+desktop-shell/src-tauri/gen/
+
+# === IDE / OS ===
+.vscode/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+
+# === Misc local artifacts ===
+*.tmp
+testfile.bin
