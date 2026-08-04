@@ -24,6 +24,7 @@ backend/custom-jre/
 # === Rust / Tauri desktop-shell ===
 desktop-shell/src-tauri/target/
 desktop-shell/src-tauri/gen/
+desktop-shell/src-tauri/updater-signing.key
 
 # === IDE / OS ===
 .vscode/
