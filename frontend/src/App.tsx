@@ -23,10 +23,15 @@ import CustomersPage from "@/modules/customer/CustomersPage"
 import CustomerDetailPage from "@/modules/customer/CustomerDetailPage"
 import StaffPage from "@/modules/auth/StaffPage"
 import LicenseGate from "@/modules/license/LicenseGate"
+import UpdateChecker from "@/components/shared/UpdateChecker"
 
 function App() {
   return (
     <LicenseGate>
+      {/* Checks for an app update once on startup; renders nothing until
+          (and unless) one's actually available. Sits alongside Routes so
+          it's mounted once, regardless of which page is active. */}
+      <UpdateChecker />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
 
