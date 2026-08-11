@@ -1,0 +1,24 @@
+2026-08-09 20:02:54.313428+05:30 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "CREATE [*]EXTENSION IF NOT EXISTS ""pgcrypto"""; expected "OR REPLACE, FORCE, VIEW, MATERIALIZED, ALIAS, SEQUENCE, USER, TRIGGER, ROLE, SCHEMA, CONSTANT, DOMAIN, TYPE, AGGREGATE, LINKED, MEMORY, CACHED, LOCAL TEMPORARY, GLOBAL TEMPORARY, TEMPORARY, TABLE, SYNONYM, UNIQUE, SPATIAL, INDEX"; SQL statement:
+CREATE EXTENSION IF NOT EXISTS "pgcrypto" [42001-240]
+2026-08-09 20:10:10.570515+05:30 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "CREATE TABLE tenants (\000d\000a    id UUID PRIMARY KEY [*]DEFAULT gen_random_uuid(),\000d\000a    business_name VARCHAR(255) NOT NULL,\000d\000a    license_key VARCHAR(255) UNIQUE,\000d\000a    edition VARCHAR(20) NOT NULL DEFAULT 'STANDARD',\000d\000a    created_at TIMESTAMP NOT NULL DEFAULT now()\000d\000a)"; expected "HASH, CONSTRAINT, COMMENT, UNIQUE, NOT NULL, CHECK, REFERENCES, ,, )"; SQL statement:
+CREATE TABLE tenants (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    business_name VARCHAR(255) NOT NULL,
+    license_key VARCHAR(255) UNIQUE,
+    edition VARCHAR(20) NOT NULL DEFAULT 'STANDARD',
+    created_at TIMESTAMP NOT NULL DEFAULT now()
+) [42001-240]
+2026-08-09 20:13:32.897194+05:30 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "CREATE TABLE tenants (\000d\000a    id UUID PRIMARY KEY [*]DEFAULT gen_random_uuid(),\000d\000a    business_name VARCHAR(255) NOT NULL,\000d\000a    license_key VARCHAR(255) UNIQUE,\000d\000a    edition VARCHAR(20) NOT NULL DEFAULT 'STANDARD',\000d\000a    created_at TIMESTAMP NOT NULL DEFAULT now()\000d\000a)"; expected "HASH, CONSTRAINT, COMMENT, UNIQUE, NOT NULL, CHECK, REFERENCES, ,, )"; SQL statement:
+CREATE TABLE tenants (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    business_name VARCHAR(255) NOT NULL,
+    license_key VARCHAR(255) UNIQUE,
+    edition VARCHAR(20) NOT NULL DEFAULT 'STANDARD',
+    created_at TIMESTAMP NOT NULL DEFAULT now()
+) [42001-240]
+2026-08-09 20:17:00.305807+05:30 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Function alias "gen_random_uuid" already exists; SQL statement:
+CREATE ALIAS IF NOT EXISTS GEN_RANDOM_UUID AS $$ java.util.UUID genRandomUuid() { return java.util.UUID.randomUUID(); } $$ [90076-240]

@@ -1,6 +1,6 @@
 
 CREATE TABLE tenants (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     business_name VARCHAR(255) NOT NULL,
     license_key VARCHAR(255) UNIQUE,
     edition VARCHAR(20) NOT NULL DEFAULT 'STANDARD',
@@ -8,7 +8,7 @@ CREATE TABLE tenants (
 );
 
 CREATE TABLE users (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     tenant_id UUID NOT NULL REFERENCES tenants(id),
     username VARCHAR(100) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,

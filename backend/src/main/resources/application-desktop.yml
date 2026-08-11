@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: retail-erp-backend
+  datasource:
+    url: jdbc:h2:file:${db.path:./data/retailerp};MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+  flyway:
+    enabled: true
+    locations: classpath:db/migration-h2
+server:
+  port: 8080
+app:
+  jwt:
+    secret: "change-this-to-a-long-random-secret-string-at-least-256-bits-for-production"
+    expiration-ms: 86400000
