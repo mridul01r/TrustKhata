@@ -55,11 +55,11 @@ public class SalesAnalyticsRepository {
     @SuppressWarnings("unchecked")
     public List<Object[]> findSalesByDay(UUID tenantId, LocalDateTime start, LocalDateTime end) {
         String sql = """
-                SELECT DATE(created_at) AS sale_date, SUM(total_amount), COUNT(*)
+                SELECT CAST(created_at AS DATE) AS sale_date, SUM(total_amount), COUNT(*)
                 FROM sales
                 WHERE tenant_id = CAST(:tenantId AS uuid)
                   AND created_at BETWEEN :start AND :end
-                GROUP BY DATE(created_at)
+                GROUP BY CAST(created_at AS DATE)
                 ORDER BY sale_date
                 """;
         return entityManager.createNativeQuery(sql)
