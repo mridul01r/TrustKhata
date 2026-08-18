@@ -8,13 +8,20 @@ import {
   MessageCircle, ChevronDown, NotebookText,
   ScrollText, Landmark
 } from 'lucide-react';
+import DownloadModal from '@/components/DownloadModal';
 
 const PRODUCT_NAME = "TrustKhata";
 const DOWNLOAD_URL = "/api/download";
 
-/* ---------------------------------------------------------
-   Scroll-reveal utilities
---------------------------------------------------------- */
+const useDownloadModal = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  return {
+    isOpen,
+    open: () => setIsOpen(true),
+    close: () => setIsOpen(false),
+  };
+};
+
 const useScrollObserver = (threshold = 0.15): [React.RefObject<HTMLDivElement | null>, boolean] => {
   const [isVisible, setIsVisible] = useState(false);
   const domRef = useRef<HTMLDivElement>(null);
@@ -50,7 +57,6 @@ const FadeIn = ({ children, delay = 0, className = "" }: { children: React.React
   );
 };
 
-/* A number that ticks up like a till total, once it scrolls into view */
 const TallyCounter = ({ target, prefix = "", suffix = "", duration = 1100 }: { target: number; prefix?: string; suffix?: string; duration?: number }) => {
   const [ref, isVisible] = useScrollObserver(0.5);
   const [value, setValue] = useState(0);
@@ -74,9 +80,6 @@ const TallyCounter = ({ target, prefix = "", suffix = "", duration = 1100 }: { t
   );
 };
 
-/* ---------------------------------------------------------
-   AI helper — calls Claude directly (Anthropic Messages API)
---------------------------------------------------------- */
 const askAssistant = async (userText: string, systemInstruction: string = ""): Promise<string> => {
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
@@ -100,9 +103,6 @@ const askAssistant = async (userText: string, systemInstruction: string = ""): P
   }
 };
 
-/* ---------------------------------------------------------
-   Root
---------------------------------------------------------- */
 const App = () => {
   return (
     <div style={{ fontFamily: "'IBM Plex Sans', sans-serif", background: 'var(--paper)', color: 'var(--ink)' }} className="min-h-screen overflow-x-hidden">
@@ -198,9 +198,6 @@ const GlobalStyle = () => (
   `}</style>
 );
 
-/* ---------------------------------------------------------
-   Navbar
---------------------------------------------------------- */
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
@@ -229,8 +226,7 @@ const Navbar = () => {
           </div>
           <nav className="hidden md:flex items-center gap-9">
             {['Features', 'How it works', 'Pricing', 'FAQ'].map((label) => (
-              <a
-                key={label}
+              <a key={label}
                 href={`#${label.toLowerCase().replace(/\s/g, '-')}`}
                 className="font-medium text-sm tracking-wide"
                 style={{ color: '#D9CFB2' }}
@@ -239,8 +235,7 @@ const Navbar = () => {
               </a>
             ))}
           </nav>
-          <a
-            href="#pricing"
+          <a key="get-trial-nav" href="#pricing"
             className="inline-flex items-center gap-2 px-5 py-2.5 font-semibold text-sm rounded-md"
             style={{ background: 'var(--stamp-red)', color: '#FBF3EA' }}
           >
@@ -253,11 +248,9 @@ const Navbar = () => {
   );
 };
 
-/* ---------------------------------------------------------
-   Hero — headline + the live ledger receipt (signature element)
---------------------------------------------------------- */
 const Hero = () => {
   const [demoRef, demoVisible] = useScrollObserver(0.35);
+  const downloadModal = useDownloadModal();
 
   const items = [
     { name: 'Basmati Rice 5kg', qty: 1, price: 640 },
@@ -304,16 +297,20 @@ const Hero = () => {
 
             <FadeIn delay={320}>
               <div className="flex flex-col sm:flex-row gap-4">
-                <a
-                  href={DOWNLOAD_URL}
+                <button
+                  onClick={downloadModal.open}
                   className="inline-flex items-center justify-center gap-2 px-7 py-4 font-semibold rounded-md"
                   style={{ background: 'var(--stamp-red)', color: '#FBF3EA', letterSpacing: '0.02em' }}
                 >
                   <Download style={{ width: 17, height: 17 }} />
                   Download free trial
-                </a>
-                <a
-                  href="#how-it-works"
+                </button>
+                <DownloadModal
+                  isOpen={downloadModal.isOpen}
+                  onClose={downloadModal.close}
+                  downloadUrl={DOWNLOAD_URL}
+                />
+                <a key="see-in-action" href="#how-it-works"
                   className="inline-flex items-center justify-center gap-2 px-7 py-4 font-semibold rounded-md"
                   style={{ color: '#F1EAD5', border: '1px solid rgba(241,234,213,0.25)' }}
                 >
@@ -334,7 +331,6 @@ const Hero = () => {
             </FadeIn>
           </div>
 
-          {/* Signature element: the live billing ledger / receipt */}
           <FadeIn delay={200}>
             <div ref={demoRef} className={demoVisible ? 'demo-visible' : ''} style={{ animation: 'floatSlow 6s ease-in-out infinite' }}>
               <div
@@ -389,9 +385,6 @@ const Hero = () => {
   );
 };
 
-/* ---------------------------------------------------------
-   Who it's for — folder tabs
---------------------------------------------------------- */
 const WhoItsFor = () => {
   const audiences = [
     { icon: <Store />, title: 'Kirana & general stores', desc: 'Fast checkout for packed goods.', color: 'var(--stamp-red)' },
@@ -422,9 +415,6 @@ const WhoItsFor = () => {
   );
 };
 
-/* ---------------------------------------------------------
-   Ledger demo strip — "how it works", 3 tally steps
---------------------------------------------------------- */
 const LedgerDemo = () => {
   const steps = [
     { no: '01', title: 'Punch in the sale', desc: 'Type or scan items. No mouse needed — everything routes through the keyboard.' },
@@ -461,9 +451,6 @@ const LedgerDemo = () => {
   );
 };
 
-/* ---------------------------------------------------------
-   Features — ledger rows
---------------------------------------------------------- */
 const Features = () => {
   const feats = [
     { icon: <Keyboard />, title: 'Keyboard-driven billing', desc: 'Punch in items at speed. Split payments and hold bills when the counter gets busy.' },
@@ -500,9 +487,6 @@ const Features = () => {
   );
 };
 
-/* ---------------------------------------------------------
-   Ask Munshi — AI naming / support tool
---------------------------------------------------------- */
 const AskMunshi = () => {
   const [shopDesc, setShopDesc] = useState('');
   const [loading, setLoading] = useState(false);
@@ -568,9 +552,6 @@ const AskMunshi = () => {
   );
 };
 
-/* ---------------------------------------------------------
-   Screenshot mockup
---------------------------------------------------------- */
 const Screenshot = () => (
   <section className="py-24" style={{ background: 'var(--ink-navy)' }}>
     <div className="max-w-6xl mx-auto px-6 lg:px-10">
@@ -599,11 +580,9 @@ const Screenshot = () => (
   </section>
 );
 
-/* ---------------------------------------------------------
-   Pricing — the paid-invoice card with a stamp
---------------------------------------------------------- */
 const Pricing = () => {
   const [ref, visible] = useScrollObserver(0.4);
+  const downloadModal = useDownloadModal();
 
   const trialIncluded = [
     'Full access to all current features',
@@ -623,7 +602,6 @@ const Pricing = () => {
           </div>
         </FadeIn>
 
-        {/* Free trial card - active while paid checkout isn't live yet */}
         <FadeIn delay={150}>
           <div
             ref={ref}
@@ -663,90 +641,28 @@ const Pricing = () => {
               ))}
             </ul>
 
-            <a
-              href={DOWNLOAD_URL}
+            <button
+              onClick={downloadModal.open}
               className="w-full flex justify-center py-4 px-6 font-semibold"
               style={{ background: 'var(--ink)', color: '#F1EAD5', borderRadius: 4 }}
             >
               Download free trial
-            </a>
+            </button>
+            <DownloadModal
+              isOpen={downloadModal.isOpen}
+              onClose={downloadModal.close}
+              downloadUrl={DOWNLOAD_URL}
+            />
             <p className="text-center text-xs mt-4 font-mono" style={{ color: 'var(--ink-soft)' }}>
               14-day free trial &middot; ~55MB download
             </p>
           </div>
         </FadeIn>
-
-        {/*
-        Paid lifetime-license card - commented out until Razorpay checkout is live.
-        Restore this block (and swap the heading text back to "ONE PRICE, PAID
-        ONCE" / "Lifetime ownership, no monthly bill.") once ready.
-
-        <FadeIn delay={150}>
-          <div
-            ref={ref}
-            className={`relative w-full max-w-md ${visible ? 'stamp-visible' : ''}`}
-            style={{ background: 'var(--paper-soft)', border: '1px solid var(--paper-line)', borderRadius: 6, boxShadow: '0 30px 60px rgba(23,35,61,0.14)', padding: '44px 40px' }}
-          >
-            <div
-              className="stamp-el absolute font-display font-bold"
-              style={{
-                top: '30%', left: '80%', width: 132, height: 132,
-                border: '4px double var(--stamp-red)', borderRadius: '50%',
-                color: 'var(--stamp-red)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                textAlign: 'center', fontSize: 15, lineHeight: 1.15, letterSpacing: '0.03em',
-                textTransform: 'uppercase', opacity: 0.92, pointerEvents: 'none'
-              }}
-            >
-              Paid in full
-            </div>
-
-            <div className="flex justify-between items-start mb-7">
-              <div>
-                <h3 className="font-display font-semibold text-2xl" style={{ color: 'var(--ink)' }}>Lifetime license</h3>
-                <p className="text-sm mt-1" style={{ color: 'var(--ink-soft)' }}>Per shop location</p>
-              </div>
-            </div>
-
-            <div className="font-display font-semibold mb-8" style={{ fontSize: '3.4rem', color: 'var(--ink)' }}>
-              Rs. 4,999
-            </div>
-
-            <ul className="space-y-4 mb-10">
-              {[
-                'Full access to all current features',
-                'Unlimited products and invoices',
-                'Install on one PC (Windows)',
-                '1 year of free software updates',
-                'Email and WhatsApp support',
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-3">
-                  <CheckCircle2 style={{ width: 18, height: 18, color: 'var(--ledger-green)', marginTop: 2, flexShrink: 0 }} />
-                  <span style={{ color: 'var(--ink)' }}>{item}</span>
-                </li>
-              ))}
-            </ul>
-
-            <a
-              href={DOWNLOAD_URL}
-              className="w-full flex justify-center py-4 px-6 font-semibold"
-              style={{ background: 'var(--ink)', color: '#F1EAD5', borderRadius: 4 }}
-            >
-              Download installer
-            </a>
-            <p className="text-center text-xs mt-4 font-mono" style={{ color: 'var(--ink-soft)' }}>
-              14-day free trial &middot; ~55MB download
-            </p>
-          </div>
-        </FadeIn>
-        */}
       </div>
     </section>
   );
 };
 
-/* ---------------------------------------------------------
-   FAQ — ledger index
---------------------------------------------------------- */
 const FAQItem = ({ q, a, index }: { q: string; a: string; index: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -853,9 +769,6 @@ const FAQ = () => {
   );
 };
 
-/* ---------------------------------------------------------
-   Footer
---------------------------------------------------------- */
 const Footer = () => (
   <footer style={{ background: 'var(--ink-navy)', borderTop: '3px solid var(--brass)' }} className="py-12">
     <div className="max-w-7xl mx-auto px-6 lg:px-10 flex flex-col md:flex-row justify-between items-center gap-6">
