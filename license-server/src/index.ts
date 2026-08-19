@@ -1,11 +1,20 @@
 import "dotenv/config";
 import express from "express";
+import cors from "cors";
 import { verifyLicenseKeyLocally } from "./lib/license.js";
 import { trialRouter } from "./routes/trial.js";
 import { webhookRouter } from "./routes/webhook.js";
 import { checkoutRouter } from "./routes/checkout.js";
 
 const app = express();
+
+// Allows the marketing site (next-app, e.g. on Vercel) to call this API
+// directly from the browser (fetch from the download-email-gate modal).
+// Set ALLOWED_ORIGIN in .env to your deployed site's exact origin
+// (e.g. https://trust-khata.vercel.app) - falls back to "*" only so local
+// dev doesn't break; lock this down before going live publicly.
+const allowedOrigin = process.env.ALLOWED_ORIGIN || "*";
+app.use(cors({ origin: allowedOrigin, methods: ["GET", "POST", "OPTIONS"] }));
 
 // IMPORTANT: webhookRouter must be mounted BEFORE express.json() below.
 // It applies its own express.raw() parser internally (needed for Razorpay
