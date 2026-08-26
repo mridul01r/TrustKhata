@@ -21,6 +21,14 @@ public class MarginReportService {
         this.repository = repository;
     }
 
+    // Native UUID columns come back as a VARCHAR string (cast in the SQL
+    // itself) so the value is consistent across both PostgreSQL and H2 -
+    // H2's JDBC driver returns raw UUID columns as byte[] instead of
+    // java.util.UUID on native queries, which breaks a direct (UUID) cast.
+    private static UUID parseUuid(Object value) {
+        return value == null ? null : UUID.fromString((String) value);
+    }
+
     public MarginReportResponse getMarginReport(UUID tenantId, LocalDateTime start, LocalDateTime end) {
         List<ProductMarginDto> byProduct = repository.findMarginByProduct(tenantId, start, end)
                 .stream()
@@ -29,7 +37,7 @@ public class MarginReportService {
                     BigDecimal cogs = (BigDecimal) row[4];
                     BigDecimal grossProfit = revenue.subtract(cogs);
                     return new ProductMarginDto(
-                            (UUID) row[0],
+                            parseUuid(row[0]),
                             (String) row[1],
                             (BigDecimal) row[2],
                             revenue,
@@ -47,7 +55,7 @@ public class MarginReportService {
                     BigDecimal cogs = (BigDecimal) row[3];
                     BigDecimal grossProfit = revenue.subtract(cogs);
                     return new CategoryMarginDto(
-                            (UUID) row[0],
+                            parseUuid(row[0]),
                             (String) row[1],
                             revenue,
                             cogs,

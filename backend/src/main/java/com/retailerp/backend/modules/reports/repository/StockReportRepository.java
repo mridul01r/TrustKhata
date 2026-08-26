@@ -18,7 +18,7 @@ public class StockReportRepository {
     public List<Object[]> findValuation(UUID tenantId) {
         String sql = """
                 SELECT
-                    p.id,
+                    CAST(p.id AS VARCHAR),
                     p.name,
                     COALESCE(c.name, 'Uncategorized'),
                     p.unit,
@@ -39,7 +39,7 @@ public class StockReportRepository {
     @SuppressWarnings("unchecked")
     public List<Object[]> findLowStock(UUID tenantId) {
         String sql = """
-                SELECT p.id, p.name, p.unit, p.stock_quantity, p.reorder_level
+                SELECT CAST(p.id AS VARCHAR), p.name, p.unit, p.stock_quantity, p.reorder_level
                 FROM products p
                 WHERE p.tenant_id = CAST(:tenantId AS uuid)
                   AND p.is_active = true
@@ -54,7 +54,7 @@ public class StockReportRepository {
     @SuppressWarnings("unchecked")
     public List<Object[]> findDeadStock(UUID tenantId, LocalDateTime cutoff) {
         String sql = """
-                SELECT p.id, p.name, p.unit, p.stock_quantity, MAX(s.created_at)
+                SELECT CAST(p.id AS VARCHAR), p.name, p.unit, p.stock_quantity, MAX(s.created_at)
                 FROM products p
                 LEFT JOIN sale_items si ON si.product_id = p.id
                 LEFT JOIN sales s ON s.id = si.sale_id AND s.tenant_id = CAST(:tenantId AS uuid)

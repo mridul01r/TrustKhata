@@ -17,7 +17,7 @@ public class SalesAnalyticsRepository {
     @SuppressWarnings("unchecked")
     public List<Object[]> findBestSellingProducts(UUID tenantId, LocalDateTime start, LocalDateTime end) {
         String sql = """
-                SELECT si.product_id, si.product_name, SUM(si.quantity), SUM(si.line_total)
+                SELECT CAST(si.product_id AS VARCHAR), si.product_name, SUM(si.quantity), SUM(si.line_total)
                 FROM sale_items si
                 JOIN sales s ON si.sale_id = s.id
                 WHERE s.tenant_id = CAST(:tenantId AS uuid)
@@ -35,7 +35,7 @@ public class SalesAnalyticsRepository {
     @SuppressWarnings("unchecked")
     public List<Object[]> findSalesByCategory(UUID tenantId, LocalDateTime start, LocalDateTime end) {
         String sql = """
-                SELECT p.category_id, COALESCE(c.name, 'Uncategorized'), SUM(si.quantity), SUM(si.line_total)
+                SELECT CAST(p.category_id AS VARCHAR), COALESCE(c.name, 'Uncategorized'), SUM(si.quantity), SUM(si.line_total)
                 FROM sale_items si
                 JOIN sales s ON si.sale_id = s.id
                 JOIN products p ON si.product_id = p.id

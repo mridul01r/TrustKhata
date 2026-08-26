@@ -21,11 +21,19 @@ public class StockReportService {
         this.repository = repository;
     }
 
+    // Native UUID columns come back as a VARCHAR string (cast in the SQL
+    // itself) so the value is consistent across both PostgreSQL and H2 -
+    // H2's JDBC driver returns raw UUID columns as byte[] instead of
+    // java.util.UUID on native queries, which breaks a direct (UUID) cast.
+    private static UUID parseUuid(Object value) {
+        return value == null ? null : UUID.fromString((String) value);
+    }
+
     public StockReportResponse getStockReport(UUID tenantId, int deadStockDays) {
         List<ProductValuationDto> valuation = repository.findValuation(tenantId)
                 .stream()
                 .map(row -> new ProductValuationDto(
-                        (UUID) row[0],
+                        parseUuid(row[0]),
                         (String) row[1],
                         (String) row[2],
                         (String) row[3],
@@ -37,7 +45,7 @@ public class StockReportService {
         List<LowStockDto> lowStock = repository.findLowStock(tenantId)
                 .stream()
                 .map(row -> new LowStockDto(
-                        (UUID) row[0],
+                        parseUuid(row[0]),
                         (String) row[1],
                         (String) row[2],
                         (BigDecimal) row[3],
@@ -48,7 +56,7 @@ public class StockReportService {
         List<DeadStockDto> deadStock = repository.findDeadStock(tenantId, cutoff)
                 .stream()
                 .map(row -> new DeadStockDto(
-                        (UUID) row[0],
+                        parseUuid(row[0]),
                         (String) row[1],
                         (String) row[2],
                         (BigDecimal) row[3],

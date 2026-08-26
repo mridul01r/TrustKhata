@@ -18,7 +18,7 @@ public class MarginReportRepository {
     public List<Object[]> findMarginByProduct(UUID tenantId, LocalDateTime start, LocalDateTime end) {
         String sql = """
                 SELECT
-                    si.product_id,
+                    CAST(si.product_id AS VARCHAR),
                     si.product_name,
                     SUM(si.quantity),
                     SUM(si.line_subtotal),
@@ -42,7 +42,7 @@ public class MarginReportRepository {
     public List<Object[]> findMarginByCategory(UUID tenantId, LocalDateTime start, LocalDateTime end) {
         String sql = """
                 SELECT
-                    p.category_id,
+                    CAST(p.category_id AS VARCHAR),
                     COALESCE(c.name, 'Uncategorized'),
                     SUM(si.line_subtotal),
                     SUM(CASE WHEN si.purchase_price IS NOT NULL THEN si.purchase_price * si.quantity ELSE 0 END),
