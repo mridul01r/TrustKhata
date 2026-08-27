@@ -6,10 +6,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class SpaController {
 
-    // Forward any non-API, non-file route to index.html so React Router can handle it
-    @RequestMapping(value = {
-        "/{path:[^\\.]*}",
-        "/**/{path:[^\\.]*}"
+    // Forward known client-side routes to index.html; API and asset paths are handled separately.
+    @RequestMapping({
+            "/login",
+            "/dashboard",
+            "/inventory",
+            "/pos",
+            "/sales",
+            "/customers",
+            "/suppliers",
+            "/purchases",
+            "/accounting",
+            "/reports",
+            "/settings",
+            "/staff"
     })
     public String forward() {
         return "forward:/index.html";

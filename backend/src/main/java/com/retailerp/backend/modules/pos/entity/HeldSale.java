@@ -1,8 +1,6 @@
 package com.retailerp.backend.modules.pos.entity;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -30,8 +28,7 @@ public class HeldSale {
     @Column(name = "label", length = 200)
     private String label;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(nullable = false, columnDefinition = "jsonb")
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String items;
 
     @Column(name = "created_at", nullable = false, updatable = false)

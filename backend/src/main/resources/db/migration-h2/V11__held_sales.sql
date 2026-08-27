@@ -4,7 +4,7 @@ CREATE TABLE held_sales (
     created_by UUID NOT NULL,
     customer_id UUID,
     is_interstate BOOLEAN NOT NULL DEFAULT FALSE,
-    items JSONB NOT NULL,
+    items TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT now()
 );
 

@@ -27,12 +27,12 @@ public class StockReportRepository {
                     (p.stock_quantity * p.purchase_price)
                 FROM products p
                 LEFT JOIN categories c ON p.category_id = c.id
-                WHERE p.tenant_id = CAST(:tenantId AS uuid)
+                WHERE p.tenant_id = ?
                   AND p.is_active = true
                 ORDER BY (p.stock_quantity * p.purchase_price) DESC
                 """;
         return entityManager.createNativeQuery(sql)
-                .setParameter("tenantId", tenantId.toString())
+                .setParameter(1, tenantId)
                 .getResultList();
     }
 
@@ -41,13 +41,13 @@ public class StockReportRepository {
         String sql = """
                 SELECT CAST(p.id AS VARCHAR), p.name, p.unit, p.stock_quantity, p.reorder_level
                 FROM products p
-                WHERE p.tenant_id = CAST(:tenantId AS uuid)
+                WHERE p.tenant_id = ?
                   AND p.is_active = true
                   AND p.stock_quantity <= p.reorder_level
                 ORDER BY p.stock_quantity ASC
                 """;
         return entityManager.createNativeQuery(sql)
-                .setParameter("tenantId", tenantId.toString())
+                .setParameter(1, tenantId)
                 .getResultList();
     }
 
@@ -57,17 +57,18 @@ public class StockReportRepository {
                 SELECT CAST(p.id AS VARCHAR), p.name, p.unit, p.stock_quantity, MAX(s.created_at)
                 FROM products p
                 LEFT JOIN sale_items si ON si.product_id = p.id
-                LEFT JOIN sales s ON s.id = si.sale_id AND s.tenant_id = CAST(:tenantId AS uuid)
-                WHERE p.tenant_id = CAST(:tenantId AS uuid)
+                LEFT JOIN sales s ON s.id = si.sale_id AND s.tenant_id = ?
+                WHERE p.tenant_id = ?
                   AND p.is_active = true
                   AND p.stock_quantity > 0
                 GROUP BY p.id, p.name, p.unit, p.stock_quantity
-                HAVING MAX(s.created_at) IS NULL OR MAX(s.created_at) < :cutoff
-                ORDER BY MAX(s.created_at) ASC NULLS FIRST
+                HAVING MAX(s.created_at) IS NULL OR MAX(s.created_at) < ?
+                ORDER BY MAX(s.created_at) ASC
                 """;
         return entityManager.createNativeQuery(sql)
-                .setParameter("tenantId", tenantId.toString())
-                .setParameter("cutoff", cutoff)
+                .setParameter(1, tenantId)
+                .setParameter(2, tenantId)
+                .setParameter(3, cutoff)
                 .getResultList();
     }
 }

@@ -21,25 +21,28 @@ public class MarginReportService {
         this.repository = repository;
     }
 
-    // Native UUID columns come back as a VARCHAR string (cast in the SQL
-    // itself) so the value is consistent across both PostgreSQL and H2 -
-    // H2's JDBC driver returns raw UUID columns as byte[] instead of
-    // java.util.UUID on native queries, which breaks a direct (UUID) cast.
+    // Native query scalar types differ slightly between PostgreSQL and H2.
     private static UUID parseUuid(Object value) {
-        return value == null ? null : UUID.fromString((String) value);
+        return value == null ? null : UUID.fromString(value.toString());
+    }
+
+    private static BigDecimal toBigDecimal(Object value) {
+        return value instanceof BigDecimal decimal
+                ? decimal
+                : new BigDecimal(value.toString());
     }
 
     public MarginReportResponse getMarginReport(UUID tenantId, LocalDateTime start, LocalDateTime end) {
         List<ProductMarginDto> byProduct = repository.findMarginByProduct(tenantId, start, end)
                 .stream()
                 .map(row -> {
-                    BigDecimal revenue = (BigDecimal) row[3];
-                    BigDecimal cogs = (BigDecimal) row[4];
+                    BigDecimal revenue = toBigDecimal(row[3]);
+                    BigDecimal cogs = toBigDecimal(row[4]);
                     BigDecimal grossProfit = revenue.subtract(cogs);
                     return new ProductMarginDto(
                             parseUuid(row[0]),
                             (String) row[1],
-                            (BigDecimal) row[2],
+                            toBigDecimal(row[2]),
                             revenue,
                             cogs,
                             grossProfit,
@@ -51,8 +54,8 @@ public class MarginReportService {
         List<CategoryMarginDto> byCategory = repository.findMarginByCategory(tenantId, start, end)
                 .stream()
                 .map(row -> {
-                    BigDecimal revenue = (BigDecimal) row[2];
-                    BigDecimal cogs = (BigDecimal) row[3];
+                    BigDecimal revenue = toBigDecimal(row[2]);
+                    BigDecimal cogs = toBigDecimal(row[3]);
                     BigDecimal grossProfit = revenue.subtract(cogs);
                     return new CategoryMarginDto(
                             parseUuid(row[0]),

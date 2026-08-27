@@ -36,3 +36,8 @@ Thumbs.db
 # === Misc local artifacts ===
 *.tmp
 testfile.bin
+
+# === H2 Database files ===
+*.db
+*.trace.db
+*.mv.db

@@ -18,12 +18,25 @@ public class SalesAnalyticsService {
         this.repository = repository;
     }
 
-    // Native UUID columns come back as a VARCHAR string (cast in the SQL
-    // itself) so the value is consistent across both PostgreSQL and H2 -
-    // H2's JDBC driver returns raw UUID columns as byte[] instead of
-    // java.util.UUID on native queries, which breaks a direct (UUID) cast.
+    // Native query scalar types differ slightly between PostgreSQL and H2.
     private static UUID parseUuid(Object value) {
-        return value == null ? null : UUID.fromString((String) value);
+        return value == null ? null : UUID.fromString(value.toString());
+    }
+
+    private static BigDecimal toBigDecimal(Object value) {
+        return value instanceof BigDecimal decimal
+                ? decimal
+                : new BigDecimal(value.toString());
+    }
+
+    private static LocalDate toLocalDate(Object value) {
+        if (value instanceof LocalDate date) {
+            return date;
+        }
+        if (value instanceof java.sql.Date date) {
+            return date.toLocalDate();
+        }
+        return LocalDate.parse(value.toString());
     }
 
     public SalesAnalyticsResponse getAnalytics(UUID tenantId, LocalDateTime start, LocalDateTime end) {
@@ -32,29 +45,29 @@ public class SalesAnalyticsService {
                 .map(row -> new BestSellingProductDto(
                         parseUuid(row[0]),
                         (String) row[1],
-                        (BigDecimal) row[2],
-                        (BigDecimal) row[3]))
+                        toBigDecimal(row[2]),
+                        toBigDecimal(row[3])))
                 .toList();
         List<CategorySalesDto> byCategory = repository.findSalesByCategory(tenantId, start, end)
                 .stream()
                 .map(row -> new CategorySalesDto(
                         parseUuid(row[0]),
                         (String) row[1],
-                        (BigDecimal) row[2],
-                        (BigDecimal) row[3]))
+                        toBigDecimal(row[2]),
+                        toBigDecimal(row[3])))
                 .toList();
         List<DailySalesDto> byDay = repository.findSalesByDay(tenantId, start, end)
                 .stream()
                 .map(row -> new DailySalesDto(
-                        (LocalDate) row[0],
-                        (BigDecimal) row[1],
+                        toLocalDate(row[0]),
+                        toBigDecimal(row[1]),
                         ((Number) row[2]).longValue()))
                 .toList();
         List<HourlySalesDto> byHour = repository.findSalesByHour(tenantId, start, end)
                 .stream()
                 .map(row -> new HourlySalesDto(
                         ((Number) row[0]).intValue(),
-                        (BigDecimal) row[1],
+                        toBigDecimal(row[1]),
                         ((Number) row[2]).longValue()))
                 .toList();
         return new SalesAnalyticsResponse(bestSellers, byCategory, byDay, byHour);

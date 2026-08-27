@@ -24,7 +24,10 @@ export default function UpdateChecker() {
     let cancelled = false;
 
     (async () => {
-      if (!("isTauri" in window)) return; // not running inside the desktop app
+      // Tauri v2 exposes its runtime through __TAURI_INTERNALS__. Keep the
+      // legacy check as a fallback for older desktop builds.
+      const isTauri = "__TAURI_INTERNALS__" in window || "isTauri" in window;
+      if (!isTauri) return; // not running inside the desktop app
       try {
         setStatus("checking");
         const result = await check();

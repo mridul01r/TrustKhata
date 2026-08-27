@@ -28,15 +28,15 @@ public class GstReportRepository {
                     SUM(CASE WHEN NOT s.is_interstate THEN si.line_tax / 2 ELSE 0 END)
                 FROM sale_items si
                 JOIN sales s ON si.sale_id = s.id
-                WHERE s.tenant_id = CAST(:tenantId AS uuid)
-                  AND s.created_at BETWEEN :start AND :end
+                WHERE s.tenant_id = ?
+                  AND s.created_at BETWEEN ? AND ?
                 GROUP BY si.hsn_code, si.unit, si.gst_rate
                 ORDER BY si.hsn_code
                 """;
         return entityManager.createNativeQuery(sql)
-                .setParameter("tenantId", tenantId.toString())
-                .setParameter("start", start)
-                .setParameter("end", end)
+                .setParameter(1, tenantId)
+                .setParameter(2, start)
+                .setParameter(3, end)
                 .getResultList();
     }
 
@@ -51,15 +51,15 @@ public class GstReportRepository {
                     SUM(CASE WHEN NOT s.is_interstate THEN si.line_tax / 2 ELSE 0 END)
                 FROM sale_items si
                 JOIN sales s ON si.sale_id = s.id
-                WHERE s.tenant_id = CAST(:tenantId AS uuid)
-                  AND s.created_at BETWEEN :start AND :end
+                WHERE s.tenant_id = ?
+                  AND s.created_at BETWEEN ? AND ?
                 GROUP BY si.gst_rate
                 ORDER BY si.gst_rate
                 """;
         return entityManager.createNativeQuery(sql)
-                .setParameter("tenantId", tenantId.toString())
-                .setParameter("start", start)
-                .setParameter("end", end)
+                .setParameter(1, tenantId)
+                .setParameter(2, start)
+                .setParameter(3, end)
                 .getResultList();
     }
 }

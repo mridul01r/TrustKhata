@@ -41,7 +41,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "tauri://localhost",
+                "http://tauri.localhost",
+                "https://tauri.localhost"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
@@ -107,9 +112,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/settings/**").hasRole("OWNER")
                         .requestMatchers("/api/staff/**").hasRole("OWNER")
                         .requestMatchers("/api/**").authenticated()
-                        // SPA client-side routing catch-all — now only reachable for non-/api paths,
-                        // since every /api/** path is already matched by a rule above.
-                        .requestMatchers("/{path:[^\\.]*}", "/**/{path:[^\\.]*}").permitAll()
+                        // Frontend client-side routes. API rules above take precedence.
+                        .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(licenseCheckFilter, JwtAuthenticationFilter.class);

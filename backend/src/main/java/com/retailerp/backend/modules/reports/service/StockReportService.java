@@ -21,12 +21,25 @@ public class StockReportService {
         this.repository = repository;
     }
 
-    // Native UUID columns come back as a VARCHAR string (cast in the SQL
-    // itself) so the value is consistent across both PostgreSQL and H2 -
-    // H2's JDBC driver returns raw UUID columns as byte[] instead of
-    // java.util.UUID on native queries, which breaks a direct (UUID) cast.
+    // Native query scalar types differ slightly between PostgreSQL and H2.
     private static UUID parseUuid(Object value) {
-        return value == null ? null : UUID.fromString((String) value);
+        return value == null ? null : UUID.fromString(value.toString());
+    }
+
+    private static BigDecimal toBigDecimal(Object value) {
+        return value instanceof BigDecimal decimal
+                ? decimal
+                : new BigDecimal(value.toString());
+    }
+
+    private static LocalDateTime toLocalDateTime(Object value) {
+        if (value instanceof LocalDateTime dateTime) {
+            return dateTime;
+        }
+        if (value instanceof java.sql.Timestamp timestamp) {
+            return timestamp.toLocalDateTime();
+        }
+        return LocalDateTime.parse(value.toString().replace(' ', 'T'));
     }
 
     public StockReportResponse getStockReport(UUID tenantId, int deadStockDays) {
@@ -37,9 +50,9 @@ public class StockReportService {
                         (String) row[1],
                         (String) row[2],
                         (String) row[3],
-                        (BigDecimal) row[4],
-                        (BigDecimal) row[5],
-                        (BigDecimal) row[6]))
+                        toBigDecimal(row[4]),
+                        toBigDecimal(row[5]),
+                        toBigDecimal(row[6])))
                 .toList();
 
         List<LowStockDto> lowStock = repository.findLowStock(tenantId)
@@ -48,8 +61,8 @@ public class StockReportService {
                         parseUuid(row[0]),
                         (String) row[1],
                         (String) row[2],
-                        (BigDecimal) row[3],
-                        (BigDecimal) row[4]))
+                        toBigDecimal(row[3]),
+                        toBigDecimal(row[4])))
                 .toList();
 
         LocalDateTime cutoff = LocalDateTime.now().minusDays(deadStockDays);
@@ -59,8 +72,8 @@ public class StockReportService {
                         parseUuid(row[0]),
                         (String) row[1],
                         (String) row[2],
-                        (BigDecimal) row[3],
-                        (LocalDateTime) row[4]))
+                        toBigDecimal(row[3]),
+                        toLocalDateTime(row[4])))
                 .toList();
 
         BigDecimal totalStockValue = valuation.stream()

@@ -20,15 +20,15 @@ public class SalesAnalyticsRepository {
                 SELECT CAST(si.product_id AS VARCHAR), si.product_name, SUM(si.quantity), SUM(si.line_total)
                 FROM sale_items si
                 JOIN sales s ON si.sale_id = s.id
-                WHERE s.tenant_id = CAST(:tenantId AS uuid)
-                  AND s.created_at BETWEEN :start AND :end
+                WHERE s.tenant_id = ?
+                  AND s.created_at BETWEEN ? AND ?
                 GROUP BY si.product_id, si.product_name
                 ORDER BY SUM(si.quantity) DESC
                 """;
         return entityManager.createNativeQuery(sql)
-                .setParameter("tenantId", tenantId.toString())
-                .setParameter("start", start)
-                .setParameter("end", end)
+                .setParameter(1, tenantId)
+                .setParameter(2, start)
+                .setParameter(3, end)
                 .getResultList();
     }
 
@@ -40,15 +40,15 @@ public class SalesAnalyticsRepository {
                 JOIN sales s ON si.sale_id = s.id
                 JOIN products p ON si.product_id = p.id
                 LEFT JOIN categories c ON p.category_id = c.id
-                WHERE s.tenant_id = CAST(:tenantId AS uuid)
-                  AND s.created_at BETWEEN :start AND :end
+                WHERE s.tenant_id = ?
+                  AND s.created_at BETWEEN ? AND ?
                 GROUP BY p.category_id, c.name
                 ORDER BY SUM(si.line_total) DESC
                 """;
         return entityManager.createNativeQuery(sql)
-                .setParameter("tenantId", tenantId.toString())
-                .setParameter("start", start)
-                .setParameter("end", end)
+                .setParameter(1, tenantId)
+                .setParameter(2, start)
+                .setParameter(3, end)
                 .getResultList();
     }
 
@@ -57,32 +57,32 @@ public class SalesAnalyticsRepository {
         String sql = """
                 SELECT CAST(created_at AS DATE) AS sale_date, SUM(total_amount), COUNT(*)
                 FROM sales
-                WHERE tenant_id = CAST(:tenantId AS uuid)
-                  AND created_at BETWEEN :start AND :end
+                WHERE tenant_id = ?
+                  AND created_at BETWEEN ? AND ?
                 GROUP BY CAST(created_at AS DATE)
                 ORDER BY sale_date
                 """;
         return entityManager.createNativeQuery(sql)
-                .setParameter("tenantId", tenantId.toString())
-                .setParameter("start", start)
-                .setParameter("end", end)
+                .setParameter(1, tenantId)
+                .setParameter(2, start)
+                .setParameter(3, end)
                 .getResultList();
     }
 
     @SuppressWarnings("unchecked")
     public List<Object[]> findSalesByHour(UUID tenantId, LocalDateTime start, LocalDateTime end) {
         String sql = """
-                SELECT EXTRACT(HOUR FROM created_at) AS sale_hour, SUM(total_amount), COUNT(*)
+                SELECT HOUR(created_at) AS sale_hour, SUM(total_amount), COUNT(*)
                 FROM sales
-                WHERE tenant_id = CAST(:tenantId AS uuid)
-                  AND created_at BETWEEN :start AND :end
-                GROUP BY EXTRACT(HOUR FROM created_at)
+                WHERE tenant_id = ?
+                  AND created_at BETWEEN ? AND ?
+                GROUP BY HOUR(created_at)
                 ORDER BY sale_hour
                 """;
         return entityManager.createNativeQuery(sql)
-                .setParameter("tenantId", tenantId.toString())
-                .setParameter("start", start)
-                .setParameter("end", end)
+                .setParameter(1, tenantId)
+                .setParameter(2, start)
+                .setParameter(3, end)
                 .getResultList();
     }
 }

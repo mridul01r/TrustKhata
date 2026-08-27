@@ -10,8 +10,6 @@
 
 use tauri::Manager;
 use tauri::path::BaseDirectory;
-#[cfg(windows)]
-use std::os::windows::process::CommandExt;
 use std::process::Stdio;
 use std::time::Duration;
 use std::fs::OpenOptions;
@@ -60,9 +58,12 @@ pub fn run() {
             log_line("setup() started");
 
             let (java_path, jar_path) = if cfg!(debug_assertions) {
+                let project_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+                    .join("..")
+                    .join("..");
                 (
-                    "../../backend/custom-jre/bin/java.exe".to_string(),
-                    "../../backend/build/libs/backend-0.0.1-SNAPSHOT.jar".to_string(),
+                    project_root.join("backend/custom-jre/bin/java.exe").to_string_lossy().to_string(),
+                    project_root.join("backend/build/libs/backend-0.0.1-SNAPSHOT.jar").to_string_lossy().to_string(),
                 )
             } else {
                 let java = app
@@ -169,6 +170,7 @@ pub fn run() {
                     {
                         Ok(resp) if resp.status().is_success() => {
                             log_line(&format!("Health check SUCCEEDED after {} attempts", attempts));
+                            let _ = window.show();
                             let _ = window.eval("window.location.reload();");
                             break;
                         }
@@ -185,6 +187,7 @@ pub fn run() {
                     }
                     if attempts > 120 {
                         log_line("Giving up on health check after 120 attempts (~60s)");
+                        let _ = window.show();
                         break;
                     }
                 }

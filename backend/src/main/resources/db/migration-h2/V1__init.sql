@@ -25,8 +25,8 @@ CREATE TABLE audit_logs (
     entity_name VARCHAR(100) NOT NULL,
     entity_id VARCHAR(100) NOT NULL,
     action VARCHAR(20) NOT NULL,
-    old_value JSONB,
-    new_value JSONB,
+    old_value TEXT,
+    new_value TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT now()
 );
 

@@ -1,0 +1,11 @@
+{
+  "version": "0.1.5",
+  "notes": "Updated desktop application with CORS fix and backend rebuild.",
+  "pub_date": "2026-08-27T06:27:00Z",
+  "platforms": {
+    "windows-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVUbVJHb1BCMExLdEF2cjdObk52SDZiSVh5bjBUTmFhSWtoM0pkeElxSDVaWXg3MDZ1RUtOL0JSSVdaWWk4ZXY2cFJSdlRDSXA1S1NFUHlsTHdYZXhDOGxrR0RnTHRVc0FjPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg3ODExNDMxCWZpbGU6VHJ1c3RLaGF0YV8wLjEuNV94NjQtc2V0dXAuZXhlCnJJcVpJd2xJQ0VEdzdYcVZqWU5sMlJ6aTh0eG90NjY0bUZXUHJvMzFiUkRtK0ZDUzNBOHpPU2xKTEpFNWtMSTJCNDFSc1BVdU5udjc1NHNmQ3AwNkJnPT0K",
+      "url": "https://github.com/mridul01r/TrustKhata/releases/download/v0.1.5/TrustKhata_0.1.5_x64-setup.exe"
+    }
+  }
+}

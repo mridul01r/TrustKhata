@@ -28,6 +28,7 @@ export default function SettingsPage() {
   const clearAllInventory = useClearAllInventory();
 
   const [form, setForm] = useState<BusinessSettingsRequest>(emptyForm);
+  const [initialForm, setInitialForm] = useState<BusinessSettingsRequest>(emptyForm);
   const [formError, setFormError] = useState<string | null>(null);
   const [savedMessage, setSavedMessage] = useState(false);
 
@@ -37,7 +38,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (settings) {
-      setForm({
+      const loadedForm: BusinessSettingsRequest = {
         businessName: settings.businessName ?? "",
         gstin: settings.gstin ?? "",
         addressLine1: settings.addressLine1 ?? "",
@@ -48,7 +49,9 @@ export default function SettingsPage() {
         phone: settings.phone ?? "",
         email: settings.email ?? "",
         trackInventory: settings.trackInventory ?? true,
-      });
+      };
+      setForm(loadedForm);
+      setInitialForm(loadedForm);
     }
   }, [settings]);
 
@@ -59,6 +62,8 @@ export default function SettingsPage() {
     setForm((prev) => ({ ...prev, [key]: value }));
     setSavedMessage(false);
   };
+
+  const isDirty = JSON.stringify(form) !== JSON.stringify(initialForm);
 
   const handleSave = async () => {
     setFormError(null);
@@ -229,7 +234,7 @@ export default function SettingsPage() {
 
             <Button
               onClick={handleSave}
-              disabled={saveSettings.isPending || !form.businessName.trim()}
+              disabled={saveSettings.isPending || !isDirty || !form.businessName.trim()}
             >
               {saveSettings.isPending ? "Saving…" : "Save settings"}
             </Button>
@@ -275,7 +280,7 @@ export default function SettingsPage() {
 
             <Button
               onClick={handleSave}
-              disabled={saveSettings.isPending || !form.businessName.trim()}
+              disabled={saveSettings.isPending || !isDirty || !form.businessName.trim()}
             >
               {saveSettings.isPending ? "Saving…" : "Save settings"}
             </Button>

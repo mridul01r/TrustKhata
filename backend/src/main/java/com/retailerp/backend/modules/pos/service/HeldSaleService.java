@@ -7,8 +7,9 @@ import com.retailerp.backend.modules.pos.entity.HeldSale;
 import com.retailerp.backend.modules.pos.exception.HeldSaleNotFoundException;
 import com.retailerp.backend.modules.pos.repository.HeldSaleRepository;
 import org.springframework.stereotype.Service;
-import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,9 +18,9 @@ import java.util.UUID;
 public class HeldSaleService {
 
     private final HeldSaleRepository heldSaleRepository;
-    private final JsonMapper jsonMapper;
+    private final ObjectMapper jsonMapper;
 
-    public HeldSaleService(HeldSaleRepository heldSaleRepository, JsonMapper jsonMapper) {
+    public HeldSaleService(HeldSaleRepository heldSaleRepository, ObjectMapper jsonMapper) {
         this.heldSaleRepository = heldSaleRepository;
         this.jsonMapper = jsonMapper;
     }
@@ -30,7 +31,11 @@ public class HeldSaleService {
         heldSale.setCreatedBy(userId);
         heldSale.setCustomerId(request.getCustomerId());
         heldSale.setInterstate(request.isInterstate());
-        heldSale.setItems(jsonMapper.writeValueAsString(request.getItems()));
+        try {
+            heldSale.setItems(jsonMapper.writeValueAsString(request.getItems()));
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Unable to serialize held sale items", e);
+        }
         heldSale.setLabel(normalizeLabel(request.getLabel()));
 
         HeldSale saved = heldSaleRepository.save(heldSale);
@@ -50,7 +55,11 @@ public class HeldSaleService {
     }
 
     private List<HeldSaleItemDto> deserializeItems(String json) {
-        return jsonMapper.readValue(json, new TypeReference<List<HeldSaleItemDto>>() {});
+        try {
+            return jsonMapper.readValue(json, new TypeReference<List<HeldSaleItemDto>>() {});
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Unable to deserialize held sale items", e);
+        }
     }
 
     private HeldSaleResponse toResponse(HeldSale heldSale) {
