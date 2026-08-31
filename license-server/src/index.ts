@@ -5,6 +5,7 @@ import { verifyLicenseKeyLocally } from "./lib/license.js";
 import { trialRouter } from "./routes/trial.js";
 import { webhookRouter } from "./routes/webhook.js";
 import { checkoutRouter } from "./routes/checkout.js";
+import { passwordResetRouter } from "./routes/password-reset.js";
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.get("/health", (_req, res) => {
 
 app.use(trialRouter);
 app.use(checkoutRouter);
+app.use(passwordResetRouter);
 
 /**
  * Sanity-check endpoint only — lets you confirm a license key you

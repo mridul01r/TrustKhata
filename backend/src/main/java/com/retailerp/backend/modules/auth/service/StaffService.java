@@ -51,6 +51,8 @@ public class StaffService {
         User user = new User();
         user.setTenantId(tenantId);
         user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setFullName(request.getFullName());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
         user.setActive(true);
@@ -69,6 +71,8 @@ public class StaffService {
         }
 
         user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setFullName(request.getFullName());
         user.setActive(request.isActive());
 
         User saved = userRepository.save(user);

@@ -2,6 +2,9 @@ package com.retailerp.backend.modules.pos.entity;
 
 import jakarta.persistence.*;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -29,6 +32,7 @@ public class HeldSale {
     private String label;
 
     @Column(nullable = false, columnDefinition = "TEXT")
+    @JdbcTypeCode(SqlTypes.JSON)
     private String items;
 
     @Column(name = "created_at", nullable = false, updatable = false)

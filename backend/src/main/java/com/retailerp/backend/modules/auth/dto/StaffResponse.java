@@ -11,6 +11,8 @@ public class StaffResponse {
 
     private UUID id;
     private String username;
+    private String email;
+    private String fullName;
     private UserRole role;
     private boolean isActive;
     private LocalDateTime createdAt;
@@ -19,6 +21,8 @@ public class StaffResponse {
         StaffResponse r = new StaffResponse();
         r.id = user.getId();
         r.username = user.getUsername();
+        r.email = user.getEmail();
+        r.fullName = user.getFullName();
         r.role = user.getRole();
         r.isActive = user.isActive();
         r.createdAt = user.getCreatedAt();
@@ -31,6 +35,14 @@ public class StaffResponse {
 
     public String getUsername() {
         return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getFullName() {
+        return fullName;
     }
 
     public UserRole getRole() {

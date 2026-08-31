@@ -25,6 +25,14 @@ public class AuthenticatedUser implements UserDetails {
         return user.getTenantId();
     }
 
+    public String getEmail() {
+        return user.getEmail();
+    }
+
+    public String getFullName() {
+        return user.getFullName();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));

@@ -12,7 +12,11 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     Optional<User> findByTenantIdAndUsername(UUID tenantId, String username);
 
+    Optional<User> findByEmail(String email);
+
     boolean existsByTenantIdAndUsername(UUID tenantId, String username);
+
+    boolean existsByEmail(String email);
 
     List<User> findByTenantId(UUID tenantId);
 

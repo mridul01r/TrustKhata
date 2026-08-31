@@ -67,3 +67,42 @@ export async function sendLicenseEmail(params: {
     throw new Error(`Failed to send license email: ${result.error.message}`);
   }
 }
+
+interface PasswordResetEmailParams {
+  toEmail: string;
+  resetUrl: string;
+}
+
+export async function sendPasswordResetEmail(params: PasswordResetEmailParams): Promise<void> {
+  const fromAddress = process.env.LICENSE_EMAIL_FROM;
+  if (!fromAddress) {
+    throw new Error("LICENSE_EMAIL_FROM is not set.");
+  }
+
+  const html = `
+    <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+      <h2>Password Reset Request</h2>
+      <p>You have requested to reset your password. Click the link below to set a new password:</p>
+      <div style="background: #f4f4f5; border-radius: 8px; padding: 16px; margin: 16px 0; word-break: break-all;">
+        <a href="${params.resetUrl}" style="color: #0066cc; font-size: 16px;">Click here to reset your password</a>
+      </div>
+      <p style="color: #555; font-size: 14px;">This link will expire in 1 hour.</p>
+      <p style="color: #999; font-size: 12px; margin-top: 32px;">
+        If you didn't request a password reset, you can safely ignore this email.
+        Your password won't be changed unless you click the link above.
+      </p>
+    </div>
+  `;
+
+  const client = getResendClient();
+  const result = await client.emails.send({
+    from: fromAddress,
+    to: params.toEmail,
+    subject: "Reset your RetailERP password",
+    html,
+  });
+
+  if (result.error) {
+    throw new Error(`Failed to send password reset email: ${result.error.message}`);
+  }
+}

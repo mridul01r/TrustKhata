@@ -33,6 +33,9 @@ public class StockReportService {
     }
 
     private static LocalDateTime toLocalDateTime(Object value) {
+        if (value == null) {
+            return null;
+        }
         if (value instanceof LocalDateTime dateTime) {
             return dateTime;
         }

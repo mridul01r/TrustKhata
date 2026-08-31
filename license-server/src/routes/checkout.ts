@@ -4,9 +4,18 @@ import { createPaymentLink } from "../lib/razorpay.js";
 
 export const checkoutRouter = Router();
 
+// Permissive email regex — matches any valid email on any provider.
+// z.string().email() is RFC-strict and rejects some real-world addresses.
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const createLinkSchema = z.object({
   customerName: z.string().min(2).max(200),
-  email: z.string().email(),
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .refine((val) => emailRegex.test(val), {
+      message: "Please enter a valid email address",
+    }),
   amountRupees: z.number().positive(),
 });
 

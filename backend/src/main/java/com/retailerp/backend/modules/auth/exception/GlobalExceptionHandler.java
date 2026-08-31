@@ -167,6 +167,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", ex.getMessage()));
     }
 
+    @ExceptionHandler(TokenInvalidException.class)
+    public ResponseEntity<Map<String, String>> handleTokenInvalid(TokenInvalidException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<Map<String, String>> handleTokenExpired(TokenExpiredException ex) {
+        return ResponseEntity.status(HttpStatus.GONE).body(Map.of("message", ex.getMessage()));
+    }
+
     private ResponseEntity<Map<String, Object>> buildErrorResponse(HttpStatus status, String message) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
