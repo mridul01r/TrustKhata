@@ -72,11 +72,11 @@ public class SalesAnalyticsRepository {
     @SuppressWarnings("unchecked")
     public List<Object[]> findSalesByHour(UUID tenantId, LocalDateTime start, LocalDateTime end) {
         String sql = """
-                SELECT HOUR(created_at) AS sale_hour, SUM(total_amount), COUNT(*)
+                SELECT EXTRACT(HOUR FROM created_at)::int AS sale_hour, SUM(total_amount), COUNT(*)
                 FROM sales
                 WHERE tenant_id = ?
                   AND created_at BETWEEN ? AND ?
-                GROUP BY HOUR(created_at)
+                GROUP BY EXTRACT(HOUR FROM created_at)
                 ORDER BY sale_hour
                 """;
         return entityManager.createNativeQuery(sql)
